@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:watch": "npm test -- --watch",
     "build": "tsc"
   },
   "author": "",
@@ -12,6 +13,7 @@
   "devDependencies": {
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.11.4",
+    "jest": "^24.5.0",
     "typescript": "^3.1.1"
   },
   "dependencies": {
