@@ -4,12 +4,17 @@
 import { Lambda } from 'aws-sdk'
 
 export class FaasrRequest {
+  static getTime() { 
+    return (new Date()).getTime()
+  }
+
   transformRequest(params) { return params }
   transformResponse(response) { return response }
   transformError(error) { return error }
+
   callService
   response
-  params
+  params = {}
   error
   startTime
   endTime
@@ -27,16 +32,12 @@ export class FaasrRequest {
     return this.error
   }
 
-  getTime() { 
-    return (new Date()).getTime()
-  }
-
   setStartTime() {
-    this.startTime = this.getTime() 
+    this.startTime = FaasrRequest.getTime() 
   }
 
   setEndTime() {
-    this.endTime = this.getTime() 
+    this.endTime = FaasrRequest.getTime() 
   }
 
   setError(error) {
