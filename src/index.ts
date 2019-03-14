@@ -1,14 +1,42 @@
 /**
  * Base service configuration and request handling
  */
+import { Lambda } from 'aws-sdk'
+
 export class FaasrRequest {
-  /*
+  transformRequest(response) { return response }
+  callService
   response
-  requestParams
+  params
   error
   startTime
   endTime
-   */
+
+  constructor(callService, params = {}) {
+    this.callService = callService
+    this.params = params
+  }
+
+  getResponse () {
+    return this.response
+  }
+
+  handleResponse(response) {
+    this.endTime = new Date()
+    this.response = response
+  }
+  
+  handleError(error) {
+    this.endTime = new Date()
+    this.error = error
+  }
+
+  request() {
+    this.startTime = new Date()
+    return this.callService()
+      .then(this.handleResponse)
+      .catch(this.handleError)
+  }
 }
 
 /*
