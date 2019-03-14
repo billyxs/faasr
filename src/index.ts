@@ -27,8 +27,16 @@ export class FaasrRequest {
     return this.error
   }
 
+  getTime() { 
+    return (new Date()).getTime()
+  }
+
+  setStartTime() {
+    this.startTime = this.getTime() 
+  }
+
   setEndTime() {
-    this.endTime = new Date()
+    this.endTime = this.getTime() 
   }
 
   setError(error) {
@@ -58,7 +66,7 @@ export class FaasrRequest {
   }
 
   request() {
-    this.startTime = new Date()
+    this.setStartTime()
     return this.callService()
       .then(this.handleResponse.bind(this))
       .catch(this.handleError.bind(this))

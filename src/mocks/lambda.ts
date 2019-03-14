@@ -3,7 +3,14 @@ export default function lambdaMock(params) {
     invoke() {
       return {
         promise() {
-          return Promise.resolve(true)
+          return new Promise((resolve, reject) => {
+            setTimeout(() => resolve(true), 1000)
+          })
+        },
+        error() {
+          return new Promise((resolve, reject) => {
+            setTimeout(() => reject(true), 1000)
+          })
         }
       } 
     }
