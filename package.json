@@ -19,16 +19,16 @@
     "typescript": "^3.1.1"
   },
   "dependencies": {
-    "aws-sdk": "^2.403.0"
+    "aws-sdk": "^2.421.0"
   },
   "jest": {
     "moduleFileExtensions": [
       "ts",
       "tsx",
       "js"
-    ],   
+    ],
     "testPathIgnorePatterns": [
-      "/lib/", 
+      "/lib/",
       "/node_modules/"
     ],
     "transform": {
