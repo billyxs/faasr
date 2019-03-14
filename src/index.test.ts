@@ -13,10 +13,10 @@ describe('FaasrRequest', () => {
   })
 
   const aRequest = new FaasrRequest(
-    { item: true }, 
     function callService(params) { 
-      return lambdaMock(params).invoke() 
-    }
+      return lambdaMock(params).invoke().promise()
+    },
+    { item: true }, 
   )
 
   describe('request instance', () => {
@@ -26,6 +26,15 @@ describe('FaasrRequest', () => {
 
     it('should have a request function', () => {
       expect(aRequest.request).toBeDefined()
+    })
+
+    it('should make a request', async () => {
+      expect.assertions(4)
+      await aRequest.request()
+      expect(aRequest.response).toBe(true)
+      expect(aRequest.startTime).toBeDefined()
+      expect(aRequest.endTime).toBeDefined()
+      expect(aRequest.error).toBeUndefined()
     })
   })
 
