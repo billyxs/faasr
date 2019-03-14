@@ -4,7 +4,9 @@
 import { Lambda } from 'aws-sdk'
 
 export class FaasrRequest {
-  transformRequest(response) { return response }
+  transformRequest(params) { return params }
+  transformResponse(response) { return response }
+  transformError(error) { return error }
   callService
   response
   params
@@ -21,21 +23,45 @@ export class FaasrRequest {
     return this.response
   }
 
-  handleResponse(response) {
+  getError () {
+    return this.error
+  }
+
+  setEndTime() {
     this.endTime = new Date()
-    this.response = response
+  }
+
+  setError(error) {
+    this.error = this.transformError(error)
+  }
+
+  setResponse(response) {
+    this.response = this.transformResponse(response)
+  }
+
+  handleResponse(response) {
+    this.setEndTime()
+    this.setResponse(response)
+
+    return this.getResponse()
   }
   
   handleError(error) {
-    this.endTime = new Date()
-    this.error = error
+    try {
+      this.setEndTime()
+      this.setError(error)
+    } catch(e) {
+      throw e
+    }
+
+    return this.getError()
   }
 
   request() {
     this.startTime = new Date()
     return this.callService()
-      .then(this.handleResponse)
-      .catch(this.handleError)
+      .then(this.handleResponse.bind(this))
+      .catch(this.handleError.bind(this))
   }
 }
 
