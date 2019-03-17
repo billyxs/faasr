@@ -1,6 +1,6 @@
 export default function lambdaMock(params) {
   return {
-    invoke() {
+    invoke(params = {}) {
       return {
         promise() {
           return new Promise((resolve, reject) => {
