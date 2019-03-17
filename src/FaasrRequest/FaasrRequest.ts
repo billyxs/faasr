@@ -11,16 +11,22 @@ export default class FaasrRequest {
   transformResponse(response) { return response }
   transformError(error) { return error }
 
-  callService
   response
   params = {}
   error
   startTime
   endTime
 
-  constructor(callService, params = {}) {
-    this.callService = callService
+  constructor(params = {}, { 
+    transformRequest = (req) => req, 
+    transformResponse = (response) => response, 
+    transformError = (error) => error, 
+  } = {}) {
     this.params = params
+  }
+
+  callService(params) {
+    return Promise.resolve(params)
   }
 
   getResponse () {
@@ -71,7 +77,7 @@ export default class FaasrRequest {
     }
     
     this.setStartTime()
-    return this.callService()
+    return this.callService({})
       .then(this.handleResponse.bind(this))
       .catch(this.handleError.bind(this))
   }

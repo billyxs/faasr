@@ -1,18 +1,19 @@
 import FaasrRequest from './FaasrRequest'
 import lambdaMock from '../mocks/lambda'
 
-const goodRequest = new FaasrRequest(
-  function callService(params) { 
+class FaasrRequestSuccessMock extends FaasrRequest {
+  callService(params) { 
     return lambdaMock(params).invoke().promise()
-  },
-  { item: true }, 
-)
-const badRequest = new FaasrRequest(
-  function callService(params) { 
+  }
+}
+class FaasrRequestErrorMock extends FaasrRequest {
+  callService(params) { 
     return lambdaMock(params).invoke().error()
-  },
-  { item: true }, 
-)
+  }
+}
+
+const goodRequest = new FaasrRequestSuccessMock({ item: true })
+const badRequest = new FaasrRequestErrorMock({ item: true })
 
 describe('FaasrRequest', () => {
   it('should be defined', () => {
