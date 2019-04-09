@@ -1,21 +1,63 @@
-import { lambdaService } from './FaasrRequest'
+import { Lambda } from 'aws-sdk'
 
-function faasrEnvironment({ 
-  service = { type: 'lambda', region: null },
+// interfaces
+interface ServiceConfig {
+  type: string
+}
 
-  transformRequest = (req) => req, 
-  transformResponse = (response) => response, 
-  transformError = (error) => error, 
+interface FaasrEnvironmentParams {
+  service: ServiceConfig,
+  defaultParams: any
+}
 
-  defaultParams = {},
-} = {}) {
-  if (!service.region) {
-    throw new Error('faasr: service region not specified.')
-  }
+/*
+ * GET Faasr Service
+ */
+function getService({ region, ...options }) {
+  const lambda = new Lambda({ region, ...options })
 
-  if (service.type === 'lambda' && service.region) {
-    return lambdaService(service, defaultParams = {})
+  return function callService(params) {
+    return lambda.invoke(params).promise()
   }
 }
 
-export default faasrEnvironment()
+/*
+ * faasr environment 
+ */
+export default function faasrEnvironment({
+  service,
+  defaultParams,
+
+  // transforms
+  transformRequest = (res) => res,
+  transformResponse = (res) => res,
+  transformError= (res) => res,
+
+  // hooks 
+  onRequest = (res) => res,
+  onResponse = (res) => res,
+  onError = (res) => res,
+}) {
+
+  const serviceRequest = getService(service)
+
+  /*
+   * faasr endpoint
+   */
+  return function faasrEndpoint(serviceName, params = {}) {
+    return {
+      request(payload, callService = serviceRequest) {
+        const requestParams = transformRequest({ ...defaultParams, ...params })
+        return callService(requestParams)
+          .then(res => {
+            onResponse(res)
+            return transformResponse(res)
+          })
+          .catch(error => {
+            onError(error)
+            return transformError(error)
+          })
+      }
+    }
+  }
+}

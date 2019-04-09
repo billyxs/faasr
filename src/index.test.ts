@@ -1,7 +1,30 @@
+import faasr from './index'
 
-describe('test', () => {
+describe('faasr', () => {
   it('should be defined', () => {
-    expect(true).toBe(true)
+    expect(faasr).toBeDefined()
   })
 })
 
+describe('faasr environment', () => {
+  const faasrInstance = faasr({
+    service: {},
+    defaultParams: {}
+  })
+
+  it('should return an instance', () => {
+    expect(faasrInstance).toBeDefined()
+  })
+
+  const faasrEndpoint = faasrInstance('service-name')
+  
+  describe('faasr endpoint', () => {
+    it('should return an object', () => {
+      expect(faasrEndpoint).toBeDefined()
+    })
+
+    it('should have a request function', () => {
+      expect(faasrEndpoint.request).toBeDefined()
+    })
+  })
+})
