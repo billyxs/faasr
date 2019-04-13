@@ -48,6 +48,7 @@ export default function faasrEnvironment({
     return {
       request(payload, callService = serviceRequest) {
         const requestParams = transformRequest({ 
+          FunctionName: serviceName,
           Payload: payload,
           ...defaultParams, 
           ...params 
