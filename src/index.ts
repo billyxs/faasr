@@ -47,15 +47,30 @@ export default function faasrEnvironment({
   return function faasrEndpoint(serviceName, params = {}) {
     return {
       request(payload, callService = serviceRequest) {
-        const requestParams = transformRequest({ ...defaultParams, ...params })
+        const requestParams = transformRequest({ 
+          Payload: payload,
+          ...defaultParams, 
+          ...params 
+        })
         return callService(requestParams)
           .then(res => {
-            onResponse(res)
-            return transformResponse(res)
+            try {
+              const finalResponse = transformResponse(res)
+              onResponse(finalResponse)
+              return finalResponse         
+            } catch (e) {
+              throw new Error(`Error transforming response. ${e.message}`)
+            }
           })
           .catch(error => {
-            onError(error)
-            return transformError(error)
+            let finalError = error 
+            try {
+              finalError = transformError(finalError)
+            } catch(e) {
+              throw new Error(`faasr: Could not transform error. Original error - ${e}}`)
+            }
+            onError(finalError)
+            throw finalError
           })
       }
     }
