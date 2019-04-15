@@ -51,6 +51,8 @@ export default function faasrEnvironment({
   return function faasrEndpoint(serviceName, params = {}) {
     return {
       request(RequestPayload = {}, callService = serviceRequest) {
+
+        // event params
         const requestParams = transformRequest({ 
           ...defaultParams, 
           ...params,
@@ -59,6 +61,8 @@ export default function faasrEnvironment({
           FunctionName: serviceName,
           Payload: RequestPayload,
         })
+
+        // service request chain 
         return callService(requestParams)
           .then(res => {
             try {
