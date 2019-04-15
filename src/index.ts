@@ -10,6 +10,10 @@ interface FaasrEnvironmentParams {
   defaultParams: any
 }
 
+interface RequestPayload {
+  type: object
+}
+
 /*
  * GET Faasr Service
  */
@@ -46,13 +50,16 @@ export default function faasrEnvironment({
    */
   return function faasrEndpoint(serviceName, params = {}) {
     return {
-      request(payload, callService = serviceRequest) {
+      request(RequestPayload = {}, callService = serviceRequest) {
         const requestParams = transformRequest({ 
-          FunctionName: serviceName,
-          Payload: payload,
           ...defaultParams, 
-          ...params 
+          ...params,
+
+          // priority
+          FunctionName: serviceName,
+          Payload: RequestPayload,
         })
+        console.log('req - ', requestParams)
         return callService(requestParams)
           .then(res => {
             try {
