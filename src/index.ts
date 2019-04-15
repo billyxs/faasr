@@ -25,6 +25,39 @@ function getService({ region, ...options }) {
   }
 }
 
+function handleResponse({ 
+  requestParams,
+  transformResponse, 
+  onResponse, 
+}) {
+ return res => {
+    try {
+      const finalResponse = transformResponse(res, requestParams)
+      onResponse(finalResponse, requestParams)
+      return finalResponse         
+    } catch (e) {
+      throw new Error(`Error transforming response. ${e.message}`)
+    }
+  }
+}
+
+function handleError({ 
+  requestParams,
+  transformError, 
+  onError, 
+}) {
+ return error => {
+    let finalError = error 
+    try {
+      finalError = transformError(finalError)
+    } catch(e) {
+      throw new Error(`faasr: Could not transform error. Original error - ${e}}`)
+    }
+    onError(finalError)
+    throw finalError
+  }
+}
+
 /*
  * faasr environment 
  */
@@ -64,25 +97,16 @@ export default function faasrEnvironment({
 
         // service request chain 
         return callService(requestParams)
-          .then(res => {
-            try {
-              const finalResponse = transformResponse(res, requestParams)
-              onResponse(finalResponse, requestParams)
-              return finalResponse         
-            } catch (e) {
-              throw new Error(`Error transforming response. ${e.message}`)
-            }
-          })
-          .catch(error => {
-            let finalError = error 
-            try {
-              finalError = transformError(finalError)
-            } catch(e) {
-              throw new Error(`faasr: Could not transform error. Original error - ${e}}`)
-            }
-            onError(finalError)
-            throw finalError
-          })
+          .then(handleResponse({ 
+            requestParams, 
+            transformResponse, 
+            onResponse 
+          }))
+          .catch(handleError({ 
+            requestParams, 
+            transformError, 
+            onError,
+          }))
       }
     }
   }
