@@ -34,12 +34,12 @@ export default function faasrEnvironment({
 
   // transforms
   transformRequest = (res) => res,
-  transformResponse = (res) => res,
+  transformResponse = (res, params) => res,
   transformError= (res) => res,
 
   // hooks 
   onRequest = (res) => res,
-  onResponse = (res) => res,
+  onResponse = (res, params) => res,
   onError = (res) => res,
 }) {
 
@@ -62,8 +62,8 @@ export default function faasrEnvironment({
         return callService(requestParams)
           .then(res => {
             try {
-              const finalResponse = transformResponse(res)
-              onResponse(finalResponse)
+              const finalResponse = transformResponse(res, requestParams)
+              onResponse(finalResponse, requestParams)
               return finalResponse         
             } catch (e) {
               throw new Error(`Error transforming response. ${e.message}`)
