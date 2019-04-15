@@ -59,7 +59,6 @@ export default function faasrEnvironment({
           FunctionName: serviceName,
           Payload: RequestPayload,
         })
-        console.log('req - ', requestParams)
         return callService(requestParams)
           .then(res => {
             try {
