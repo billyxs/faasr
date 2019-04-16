@@ -2,12 +2,13 @@ import { Lambda } from 'aws-sdk'
 
 // interfaces
 interface ServiceConfig {
-  type: string
+  type: string,
+  [propName: string]: any, 
 }
 
 interface FaasrEnvironmentParams {
   service: ServiceConfig,
-  defaultParams: any
+  defaultParams: object
 }
 
 interface RequestPayload {
