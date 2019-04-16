@@ -2,7 +2,7 @@
   "name": "faasr",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "jest",
     "test:watch": "npm test -- --watch",
