@@ -25,20 +25,38 @@ function getService({ region, ...options }) {
   }
 }
 
+function responseHandler({ params, transform, listener, responseType = 'normal' }) {
+  return res => {
+    let finalResponse 
+
+    // handle transform
+    try {
+      finalResponse = transform(res, params)
+    } catch (e) {
+      throw new Error(`Error transforming response. ${e.message}`)
+    }
+
+    // handle listener
+    try {
+      listener(finalResponse, params)
+    } catch(e) {
+    
+    }
+
+    // throw error response type
+    if (responseType === 'error') {
+      throw finalResponse
+    }
+
+    return finalResponse         
+  }
+}
+
 function handleResponse({ 
   requestParams,
   transformResponse, 
   onResponse, 
 }) {
- return res => {
-    try {
-      const finalResponse = transformResponse(res, requestParams)
-      onResponse(finalResponse, requestParams)
-      return finalResponse         
-    } catch (e) {
-      throw new Error(`Error transforming response. ${e.message}`)
-    }
-  }
 }
 
 function handleError({ 
@@ -66,14 +84,14 @@ export default function faasrEnvironment({
   defaultParams,
 
   // transforms
-  transformRequest = (res) => res,
+  transformRequest = (params) => params,
   transformResponse = (res, params) => res,
-  transformError= (res) => res,
+  transformError= (error) => error,
 
   // hooks 
-  onRequest = (res) => res,
+  onRequest = (params) => params,
   onResponse = (res, params) => res,
-  onError = (res) => res,
+  onError = (error) => error,
 }) {
 
   const serviceRequest = getService(service)
@@ -97,15 +115,16 @@ export default function faasrEnvironment({
 
         // service request chain 
         return callService(requestParams)
-          .then(handleResponse({ 
-            requestParams, 
-            transformResponse, 
-            onResponse 
+          .then(responseHandler({ 
+            params: requestParams, 
+            transform: transformResponse, 
+            listener: onResponse,
           }))
-          .catch(handleError({ 
-            requestParams, 
-            transformError, 
-            onError,
+          .catch(responseHandler({ 
+            params: requestParams, 
+            transform: transformError, 
+            listener: onError,
+            responseType: 'error'
           }))
       }
     }
