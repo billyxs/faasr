@@ -76,7 +76,7 @@ export default function faasrEnvironment({
   /*
    * faasr endpoint
    */
-  return function faasrEndpoint(serviceName, params = {}) {
+  return function faasrEndpoint(serviceName:string, params:object = {}) {
     return {
       request(RequestPayload = {}, callService = serviceRequest) {
 
