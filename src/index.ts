@@ -27,7 +27,7 @@ function getService({ region, ...options }) {
 }
 
 function responseHandler({ params, transform, listener, responseType = 'normal' }) {
-  return res => {
+  return (res:any) => {
     let finalResponse 
 
     // handle transform
@@ -50,30 +50,6 @@ function responseHandler({ params, transform, listener, responseType = 'normal' 
     }
 
     return finalResponse         
-  }
-}
-
-function handleResponse({ 
-  requestParams,
-  transformResponse, 
-  onResponse, 
-}) {
-}
-
-function handleError({ 
-  requestParams,
-  transformError, 
-  onError, 
-}) {
- return error => {
-    let finalError = error 
-    try {
-      finalError = transformError(finalError)
-    } catch(e) {
-      throw new Error(`faasr: Could not transform error. Original error - ${e}}`)
-    }
-    onError(finalError)
-    throw finalError
   }
 }
 
