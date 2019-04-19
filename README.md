@@ -38,9 +38,9 @@ Given a full configuration, this is the lifecycle of a Faasr request.
 - Merge default request params with function override params
 - Transform the request params
 - Invoke the request to the service
-- If error successful
+- If result is successful
   - Transform the response
-  - If error is thrown in the transform, the request results in an error 
+  - If error is thrown in the response transform, the request results in an error 
     - Transform the error
 - If result is an error
   - Transform the error
@@ -66,7 +66,7 @@ const myService = faasr({
   },
 
   transformError(error, requestParams) {
-    throw new Error(``)
+    throw new Error(`Error with your request to ${requestParams.FunctionName}: ${error.message}`)
   },
 })
 
@@ -99,10 +99,23 @@ faasr({
   },
 
   // transformation of all successful responses
-  transformResponse() {}
+  transformResponse(response, requestParams) {
+    // throw if response status is an error 
+    if (response.status !== 200) {
+      throw response
+    }
+
+    return response
+  }
 
   // transformation of all errors resulting
-  transformResponse() {}
+  transformResponse(error, requestParams) {
+    if (error.status === 500) {
+      throw new Error(`Internal server error: ${JSON.stringify(error)}``)
+    }
+
+    throw error
+  }
 })
 ```
 
