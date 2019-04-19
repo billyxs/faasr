@@ -34,14 +34,14 @@ function responseHandler({ params, transform, listener, responseType = 'normal' 
     try {
       finalResponse = transform(res, params)
     } catch (e) {
-      throw new Error(`Error transforming response. ${e.message}`)
+      throw new Error(`Error with transform ${transform}. ${e.message}. ${JSON.stringify(e)}`)
     }
 
     // handle listener
     try {
       listener(finalResponse, params)
     } catch(e) {
-    
+      // do nothing
     }
 
     // throw error response type
